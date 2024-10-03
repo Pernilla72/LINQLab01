@@ -1,38 +1,47 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.ExtendedProperties;
+using System;
 using System.Diagnostics;
 
 namespace LINQLabExercice;
 
 
-internal class Program
+public class Program
 {
     static void Main(string[] args)
     {
         List<Person> people = ReadFromFile("names.txt");
 
-        List<Person> peopleWithPo = StartWithSearch(people);
-
         var FilteredPeople = ExtractNoDublesMethod(people);
-        
+
             foreach (var p in FilteredPeople)
             {
                 Console.WriteLine($"{p.Name} {p.Namnsdag}");
             }
             Console.WriteLine(FilteredPeople.Count());
-            
-        
+
+        List<Person> PeopleWithLi = StartWithSearch(people);
+            foreach (var person in PeopleWithLi)
+            {
+                Console.WriteLine($"{person.Name} {person.Namnsdag}");
+            }
+            Console.WriteLine(PeopleWithLi.Count());
+            Console.WriteLine(".........................");
     }
-     
+
         static List<Person> ReadFromFile(string path)
-        {
+        { 
             var q = File.ReadLines(path);
-            return new List<Person>();
+            var people = q
+            .Select(s => new Person { Name = s.Split(';')[0], Namnsdag = DateTime.Parse(s.Split(';')[1]) })
+                //return new List<Person>();
+            .ToList();
+        return people;
         }
 
-        static List<Person> ExtractNoDublesMethod(IEnumerable<string> lines)
+
+        static List<Person> ExtractNoDublesMethod(IEnumerable<Person> people)
         {
-            return lines
-                .Select(s => new Person { Name = s.Split(';')[0], Namnsdag = DateTime.Parse(s.Split(';')[1]) })
+            return people
                 .DistinctBy(p => p.Name)
                 .ToList();
         }
@@ -40,7 +49,7 @@ internal class Program
         static List<Person> StartWithSearch(IEnumerable<Person> people)
         {
             return people
-                .Where(static n => n.Name.StartsWith("Po", StringComparison.OrdinalIgnoreCase))
+                .Where(static n => n.Name.StartsWith("Li", StringComparison.OrdinalIgnoreCase))
                 .ToList();
         }
     
