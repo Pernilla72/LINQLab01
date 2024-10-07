@@ -49,6 +49,8 @@ public class Program
         PrintQuarterlyList(NamedayEachQuarter, "Så här många har namnsdag i resp. kvartal");
 
         //de fem dagar på året som flest har namnsdag.
+        var topDays = CountedFavoriteDays(FilteredPeople);
+        PrintTopList(topDays, "Top 5 namnsdagsdatum");
 
     }
 
@@ -116,12 +118,30 @@ public class Program
         .Cast<object>()
         .ToList();
     }
+
+    //Uppgift 4b
     static List<Timeframes> CountedQuarterlyNameday(IEnumerable<Person> people)
     {
         return people
         .Where(p => !string.IsNullOrEmpty(p.Name))
         .GroupBy(d => (d.Namnsdag.Month +2) /3)
         .Select(g => new Timeframes { Quarter = g.Key, Count = g.Count() })
+        .ToList();
+    }
+
+    //Uppgift 4c
+    static List<NamnsdagSummering> CountedFavoriteDays(IEnumerable<Person> people)
+    {
+        return people
+        .GroupBy(d => new { d.Namnsdag.Month, d.Namnsdag.Day })
+        .Select(d => new NamnsdagSummering
+        { 
+            Month = d.Key.Month, 
+            Day = d.Key.Day,
+            Count = d.Count() 
+        })
+        .OrderByDescending(d => d.Count)
+        .Take(5)
         .ToList();
     }
 
@@ -170,6 +190,17 @@ public class Program
         {
             string quarterName = $"Q{group.Quarter}";
             Console.WriteLine($"{quarterName}: {group.Count} personer");
+        }
+
+        Console.WriteLine(".........................");
+    }
+
+    static void PrintTopList(IEnumerable<dynamic> topDays, string header)
+    {
+        Console.WriteLine(header);
+        foreach (var day in topDays)
+        {
+            Console.WriteLine($"{day.Month}/{day.Day}: {day.Count} personer");
         }
 
         Console.WriteLine(".........................");
