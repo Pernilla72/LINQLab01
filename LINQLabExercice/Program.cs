@@ -38,8 +38,8 @@ public class Program
         List<object> EachStartLetterCount = CountedStartLetter(FilteredPeople);
         PrintList(EachStartLetterCount, "Så här många börjar på resp. bokstav i alfabetet");
 
-        //Skriv Linq-frågor som beräknar hur många som har namnsdag:
 
+        //Skriv Linq-frågor som beräknar hur många som har namnsdag:
         //i varje månad
         List<object> NamedayEachMonth = CountedMonthlyNameday(FilteredPeople);
         PrintMonthlyList(NamedayEachMonth, "Så här många har namnsdag på resp. månad");
@@ -59,7 +59,6 @@ public class Program
         var q = File.ReadLines(path);
         var people = q
         .Select(s => new Person { Name = s.Split(';')[0], Namnsdag = DateTime.Parse(s.Split(';')[1]) })
-        //return new List<Person>();
         .ToList();
         return people;
     }
@@ -77,6 +76,7 @@ public class Program
     {
         return people
             .Where(n => n.Name.StartsWith("Li", StringComparison.OrdinalIgnoreCase))
+            .Select (n => n.Name) //för att få en lista av namnen, inte personer.
             .ToList();
     }
 
@@ -85,6 +85,7 @@ public class Program
     {
         return people
             .Where(d => d.Namnsdag.Month == 4 && d.Namnsdag.Day == 23)
+            //.Select(n => n.Name)  för att välja namnen 
             .ToList();
     }
 
@@ -147,6 +148,8 @@ public class Program
 
 
     //Olika printmetoder
+
+    //Skriver en lista av personer samt deras namnsdagsdatum, del av namn eller namnsdag på specifik datum
     static void PrintPeople(List<Person> people, string header)
     {
         Console.WriteLine(header);
@@ -157,6 +160,8 @@ public class Program
         Console.WriteLine($"Antal personer: {people.Count()}");
         Console.WriteLine(".........................");
     }
+
+    //Skriver en lista med antal första bokstav i namnet
     static void PrintList(IEnumerable<dynamic> groups, string header)
     {
         Console.WriteLine(header);
@@ -168,6 +173,7 @@ public class Program
         Console.WriteLine(".........................");
     }
 
+    //Skriver en lista med antal personer som har namsdag varje månad, sorterat i månadsordning
     static void PrintMonthlyList(IEnumerable<dynamic> groups, string header)
     {
         Console.WriteLine(header);
@@ -181,6 +187,7 @@ public class Program
         Console.WriteLine(".........................");
     }
 
+    //Skriver en lista med antal personer som har namsdag varje kvartal, grupperat / kvartal
     static void PrintQuarterlyList(IEnumerable<Timeframes> groups, string header)
     {
         Console.WriteLine(header);
@@ -195,6 +202,7 @@ public class Program
         Console.WriteLine(".........................");
     }
 
+    //Skriver en lista med top 5 namnsdagsdatum samt hur många som har namnsdag då.
     static void PrintTopList(IEnumerable<dynamic> topDays, string header)
     {
         Console.WriteLine(header);
