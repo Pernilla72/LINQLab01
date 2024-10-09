@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35219.272
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LINQLabExercice", "LINQLabExercice\LINQLabExercice.csproj", "{6B8E6E82-7AC8-4C75-8D2F-F014C4A0E9C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LINQLabExercice", "LINQLabExercice\LINQLabExercice.csproj", "{6B8E6E82-7AC8-4C75-8D2F-F014C4A0E9C5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{972373E7-77B2-4467-9BBD-7A77A59E5972}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

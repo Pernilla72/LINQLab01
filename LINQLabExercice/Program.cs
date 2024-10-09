@@ -1,9 +1,12 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.ExtendedProperties;
+using DocumentFormat.OpenXml.Office2013.Word;
 using DocumentFormat.OpenXml.Spreadsheet;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Diagnostics;
-using static LINQLabExercice.Timeframes;
+using static LINQLabExercice.Helpclass;
+using static LINQLabExercice.Person;
 
 
 namespace LINQLabExercice;
@@ -13,45 +16,48 @@ public class Program
 {
     static void Main(string[] args)
     {
-        //1: Läs in personer från filen
+        //1: **Läs in personer från filen
         List<Person> people = ReadFromFile("names.txt");
+        //PrintOut(people, "Personer med Namnsdag", q => q.ToString());  
 
-        //1: Se till att det inte är några dubletter
+        //1: **Se till att det inte är några dubletter
         var FilteredPeople = ExtractNoDublesMethod(people);
-        PrintPeople(FilteredPeople, "Filtrerad lista, utan dubletter:");
-        //Console.WriteLine(FilteredPeople.Count());
+        PrintOut(FilteredPeople, "Filtrerad lista, utan dubletter:", p => p.ToString()); 
 
-        //2a: Lista alla namn som börjar på en viss bokstavskombination
+        //2a: **Lista alla namn som börjar på en viss bokstavskombination
         List<Person> PeopleWithLi = StartWithSearch(FilteredPeople);
-        PrintPeople(PeopleWithLi, "Alla personer vars namn börjar på 'Li'");
+        PrintOut(PeopleWithLi, "Alla personer vars namn börjar på 'Li'", p => p.ToString());
+       
 
-        //2b:Lista alla namn som har namnsdag ett visst datum
+        //2b: **Lista alla namn som har namnsdag ett visst datum
         List<Person> SpecialNamedayDate = NamedayOnApril23rd(FilteredPeople);
-        PrintPeople(SpecialNamedayDate, "Alla personer som har namnsdag 23 April");
+        PrintOut(SpecialNamedayDate, "Alla personer som har namnsdag 23 April", p => p.ToString());
 
-        //2c: Lista alla namn som börjar på en bestämd bokstavskombination och har namnsdag 
+        //2c: **Lista alla namn som börjar på en bestämd bokstavskombination och har namnsdag 
         //en bestämd månad.
         List<Person> SelectedDateAndStartofName = StartAndDateDecided(FilteredPeople);
-        PrintPeople(SelectedDateAndStartofName, "Alla som har namnsdag i Maj och börjar på Ma");
+        PrintOut(SelectedDateAndStartofName, "Alla som har namnsdag i Maj och börjar på Ma", p => p.ToString());
 
-        //3: Skriv en Linq-fråga som listar hur många namn som börjar på varje bokstav i alfabetet.
-        List<object> EachStartLetterCount = CountedStartLetter(FilteredPeople);
-        PrintList(EachStartLetterCount, "Så här många börjar på resp. bokstav i alfabetet");
-
+        //3: **Skriv en Linq-fråga som listar hur många namn som börjar på varje bokstav i alfabetet.
+        List<Helpclass> EachStartLetterCount = CountedStartLetter(FilteredPeople);
+        PrintOut(EachStartLetterCount, "Så här många börjar på resp. bokstav i alfabetet", g => $"{g.FirstLetter}: {g.Count} personer");
 
         //Skriv Linq-frågor som beräknar hur många som har namnsdag:
-        //i varje månad
-        List<object> NamedayEachMonth = CountedMonthlyNameday(FilteredPeople);
-        PrintMonthlyList(NamedayEachMonth, "Så här många har namnsdag på resp. månad");
+        //4a: i varje månad
+        List<Helpclass> NamedayEachMonth = CountedMonthlyNameday(FilteredPeople);
+        PrintOut(NamedayEachMonth.OrderBy(g => g.Month), "Så här många har namnsdag på resp. månad", g =>
+        {
+            string monthName = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(g.Month);
+            return $"{monthName.PadRight(10)} {g.Count} personer";
+        });
 
-        //i varje kvartal
-        List<Timeframes> NamedayEachQuarter = CountedQuarterlyNameday(FilteredPeople);
+        //4b: i varje kvartal
+        List<Helpclass> NamedayEachQuarter = CountedQuarterlyNameday(FilteredPeople);
         PrintQuarterlyList(NamedayEachQuarter, "Så här många har namnsdag i resp. kvartal");
 
-        //de fem dagar på året som flest har namnsdag.
+        //4c: Ta fram de fem dagar i listan som flest har namnsdag.
         var topDays = CountedFavoriteDays(FilteredPeople);
         PrintTopList(topDays, "Top 5 namnsdagsdatum");
-
     }
 
     static List<Person> ReadFromFile(string path)
@@ -76,7 +82,7 @@ public class Program
     {
         return people
             .Where(n => n.Name.StartsWith("Li", StringComparison.OrdinalIgnoreCase))
-            .Select (n => n.Name) //för att få en lista av namnen, inte personer.
+            //.Select (n => n.Name) //för att få en lista av namnen, inte personer.
             .ToList();
     }
 
@@ -84,8 +90,7 @@ public class Program
     static List<Person> NamedayOnApril23rd(IEnumerable<Person> people)
     {
         return people
-            .Where(d => d.Namnsdag.Month == 4 && d.Namnsdag.Day == 23)
-            //.Select(n => n.Name)  för att välja namnen 
+            .Where(d => d.Namnsdag.Month == 4 && d.Namnsdag.Day == 23) 
             .ToList();
     }
 
@@ -99,34 +104,37 @@ public class Program
 
 
     //Uppgift 3
-    static List<object> CountedStartLetter(IEnumerable<Person> people)
+    static List<Helpclass> CountedStartLetter(IEnumerable<Person> people)
     {
-        return people
+         return people
         .Where(p => !string.IsNullOrEmpty(p.Name))
         .GroupBy(p => p.Name.Substring(0, 1))
-        .Select(g => new { FirstLetter = g.Key, Count = g.Count() })
-        .Cast<object>()
+        .Select(g => new Helpclass { FirstLetter = g.Key, Count = g.Count() })
         .ToList();
     }
 
+    private static object Where(Func<object, bool> value)
+    {
+        throw new NotImplementedException();
+    }
+
     //Uppgift 4a
-    static List<object> CountedMonthlyNameday(IEnumerable<Person> people)
+    static List<Helpclass> CountedMonthlyNameday(IEnumerable<Person> people)
     {
         return people
         .Where(p => !string.IsNullOrEmpty(p.Name))
         .GroupBy(d => d.Namnsdag.Month)
-        .Select(g => new { Month = g.Key, Count = g.Count() })
-        .Cast<object>()
+        .Select(g => new Helpclass { Month = g.Key, Count = g.Count() })
         .ToList();
     }
 
     //Uppgift 4b
-    static List<Timeframes> CountedQuarterlyNameday(IEnumerable<Person> people)
+    static List<Helpclass> CountedQuarterlyNameday(IEnumerable<Person> people)
     {
         return people
         .Where(p => !string.IsNullOrEmpty(p.Name))
         .GroupBy(d => (d.Namnsdag.Month +2) /3)
-        .Select(g => new Timeframes { Quarter = g.Key, Count = g.Count() })
+        .Select(g => new Helpclass { Quarter = g.Key, Count = g.Count() })
         .ToList();
     }
 
@@ -146,32 +154,44 @@ public class Program
         .ToList();
     }
 
-
     //Olika printmetoder
+    //Generisk printmetod aom ska ersätta alla nedan: 
+
+    static void PrintOut<T>(IEnumerable<T> items, string header, Func<T, string> printLogic)
+    {
+        Console.WriteLine(header);
+        foreach (var item in items)
+        {
+            Console.WriteLine(printLogic(item));  // Använder den delegerade printlogiken
+        }
+        Console.WriteLine($"Antal: {items.Count()}");
+        Console.WriteLine(".........................");
+    }
+
 
     //Skriver en lista av personer samt deras namnsdagsdatum, del av namn eller namnsdag på specifik datum
-    static void PrintPeople(List<Person> people, string header)
-    {
-        Console.WriteLine(header);
-        foreach (var person in people)
-        {
-            Console.WriteLine($"{person.Name} {person.Namnsdag}");
-        }
-        Console.WriteLine($"Antal personer: {people.Count()}");
-        Console.WriteLine(".........................");
-    }
+    //static void PrintPeople(List<Person> people, string header)
+    //{
+    //    Console.WriteLine(header);
+    //    foreach (var person in people)
+    //    {
+    //        Console.WriteLine(person);          //$"{person.Name} {person.Namnsdag}"
+    //    }
+    //    Console.WriteLine($"Antal personer: {people.Count()}");
+    //    Console.WriteLine(".........................");
+    //}
 
     //Skriver en lista med antal första bokstav i namnet
-    static void PrintList(IEnumerable<dynamic> groups, string header)
-    {
-        Console.WriteLine(header);
-        foreach (var group in groups)
-        {
-            Console.WriteLine($"{group.FirstLetter}: {group.Count} personer");
-        }
+    //static void PrintList(IEnumerable<dynamic> groups, string header)
+    //{
+    //    Console.WriteLine(header);
+    //    foreach (var group in groups)
+    //    {
+    //        Console.WriteLine($"{group.FirstLetter}: {group.Count} personer");
+    //   }
 
-        Console.WriteLine(".........................");
-    }
+    //    Console.WriteLine(".........................");
+    //}
 
     //Skriver en lista med antal personer som har namsdag varje månad, sorterat i månadsordning
     static void PrintMonthlyList(IEnumerable<dynamic> groups, string header)
@@ -188,7 +208,7 @@ public class Program
     }
 
     //Skriver en lista med antal personer som har namsdag varje kvartal, grupperat / kvartal
-    static void PrintQuarterlyList(IEnumerable<Timeframes> groups, string header)
+    static void PrintQuarterlyList(IEnumerable<Helpclass> groups, string header)
     {
         Console.WriteLine(header);
         var sortedgroups = groups.OrderBy(g => g.Quarter);

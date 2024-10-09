@@ -8,11 +8,8 @@ namespace LINQLabExercice
 {
     internal class NamnsdagSummering
     {
-        
         public int Month { get; set; }
         public int Day { get; set; }
         public int Count { get; set; }
-        
-
     }
 }
