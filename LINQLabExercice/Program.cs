@@ -53,11 +53,15 @@ public class Program
 
         //4b: i varje kvartal
         List<Helpclass> NamedayEachQuarter = CountedQuarterlyNameday(FilteredPeople);
-        PrintQuarterlyList(NamedayEachQuarter, "Så här många har namnsdag i resp. kvartal");
+        PrintOut(NamedayEachQuarter.OrderBy(g => g.Quarter), "Så här många har namnsdag i resp. kvartal", g =>
+        {
+        string quarterName = $"Q{g.Quarter}";
+        return ($"{quarterName}: {g.Count} personer");
+        });
 
         //4c: Ta fram de fem dagar i listan som flest har namnsdag.
         var topDays = CountedFavoriteDays(FilteredPeople);
-        PrintTopList(topDays, "Top 5 namnsdagsdatum");
+        PrintOut(topDays, "Top 5 namnsdagsdatum", d => d.ToString());
     }
 
     static List<Person> ReadFromFile(string path)
@@ -194,33 +198,33 @@ public class Program
     //}
 
     //Skriver en lista med antal personer som har namsdag varje månad, sorterat i månadsordning
-    static void PrintMonthlyList(IEnumerable<dynamic> groups, string header)
-    {
-        Console.WriteLine(header);
-        var SortedGroups = groups.OrderBy(g => g.Month);   //Sorterar månaderna i rätt ordning.
-        foreach (var group in groups)
-        {
-            string monthName = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(group.Month);
-            Console.WriteLine($"{monthName}: {group.Count} personer");
-        }
+    //static void PrintMonthlyList(IEnumerable<dynamic> groups, string header)
+    //{
+    //    Console.WriteLine(header);
+    //    var SortedGroups = groups.OrderBy(g => g.Month);   //Sorterar månaderna i rätt ordning.
+    //    foreach (var group in groups)
+    //    {
+    //        string monthName = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(group.Month);
+    //        Console.WriteLine($"{monthName}: {group.Count} personer");
+    //    }
 
-        Console.WriteLine(".........................");
-    }
+    //    Console.WriteLine(".........................");
+    //}
 
     //Skriver en lista med antal personer som har namsdag varje kvartal, grupperat / kvartal
-    static void PrintQuarterlyList(IEnumerable<Helpclass> groups, string header)
-    {
-        Console.WriteLine(header);
-        var sortedgroups = groups.OrderBy(g => g.Quarter);
+    //static void PrintQuarterlyList(IEnumerable<Helpclass> groups, string header)
+    //{
+    //    Console.WriteLine(header);
+    //    var sortedgroups = groups.OrderBy(g => g.Quarter);
 
-        foreach (var group in sortedgroups)
-        {
-            string quarterName = $"Q{group.Quarter}";
-            Console.WriteLine($"{quarterName}: {group.Count} personer");
-        }
+    //    foreach (var group in sortedgroups)
+    //    {
+    //        string quarterName = $"Q{group.Quarter}";
+    //        Console.WriteLine($"{quarterName}: {group.Count} personer");
+    //    }
 
-        Console.WriteLine(".........................");
-    }
+    //    Console.WriteLine(".........................");
+    //}
 
     //Skriver en lista med top 5 namnsdagsdatum samt hur många som har namnsdag då.
     static void PrintTopList(IEnumerable<dynamic> topDays, string header)
