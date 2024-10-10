@@ -158,9 +158,8 @@ public class Program
         .ToList();
     }
 
-    //Olika printmetoder
-    //Generisk printmetod aom ska ersätta alla nedan: 
-
+    
+    //Generisk printmetod som ska ersätta alla nedan: 
     static void PrintOut<T>(IEnumerable<T> items, string header, Func<T, string> printLogic)
     {
         Console.WriteLine(header);
@@ -172,7 +171,7 @@ public class Program
         Console.WriteLine(".........................");
     }
 
-
+    //Tidigare Olika printmetoder för de olika utskrifterna.
     //Skriver en lista av personer samt deras namnsdagsdatum, del av namn eller namnsdag på specifik datum
     //static void PrintPeople(List<Person> people, string header)
     //{
@@ -227,16 +226,16 @@ public class Program
     //}
 
     //Skriver en lista med top 5 namnsdagsdatum samt hur många som har namnsdag då.
-    static void PrintTopList(IEnumerable<dynamic> topDays, string header)
-    {
-        Console.WriteLine(header);
-        foreach (var day in topDays)
-        {
-            Console.WriteLine($"{day.Month}/{day.Day}: {day.Count} personer");
-        }
+    //static void PrintTopList(IEnumerable<dynamic> topDays, string header)
+    //{
+    //    Console.WriteLine(header);
+    //    foreach (var day in topDays)
+    //    {
+    //        Console.WriteLine($"{day.Month}/{day.Day}: {day.Count} personer");
+    //    }
 
-        Console.WriteLine(".........................");
-    }
+    //    Console.WriteLine(".........................");
+    //}
 }
 
 
